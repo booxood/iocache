@@ -1,0 +1,34 @@
+{
+  "name": "iocache",
+  "version": "1.0.0",
+  "description": "jcache wrapper",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint . --quiet --cache",
+    "test:redis": "jest redis",
+    "test:jcache": "jest jcache"
+  },
+  "engines": {
+    "node": ">=7.6.0",
+    "npm": ">=5"
+  },
+  "author": "Liucw",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/o2team/iocache.git"
+  },
+  "bugs": {
+    "url": "https://github.com/o2team/iocache/issues"
+  },
+  "homepage": "https://github.com/o2team/iocache#readme",
+  "dependencies": {
+    "redis-commands": "1.3.1"
+  },
+  "devDependencies": {
+    "eslint": "4.12.1",
+    "ioredis": "3.2.2",
+    "jest": "21.2.1",
+    "standard": "10.0.3"
+  }
+}
