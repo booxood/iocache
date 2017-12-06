@@ -11,25 +11,29 @@ module.exports = function (cacheClient, cacheType) {
         await cacheClient.set('string', 'ok')
         expect(await cacheClient.get('string')).toBe('ok')
       })
-      it('set key EX seconds', async () => {
+      it('set key EX seconds *', async () => {
         await cacheClient.set('string', 'ok', 'EX', 1)
         expect(await cacheClient.get('string')).toBe('ok')
         await (new Promise(resolve => {
           setTimeout(function () {
             cacheClient.get('string').then(v => {
-              expect(v).toBe(null)
+              // expect(v).toBe(null) // redis
+              // expect(v).toBe(undefined) // jcache
+              expect(!!v).toBe(false)
               resolve()
             })
           }, 1010)
         }))
       })
-      it('set key PX milliseconds', async () => {
+      it('set key PX milliseconds *', async () => {
         await cacheClient.set('string', 'ok', 'PX', 10)
         expect(await cacheClient.get('string')).toBe('ok')
         await (new Promise(resolve => {
           setTimeout(function () {
             cacheClient.get('string').then(v => {
-              expect(v).toBe(null)
+              // expect(v).toBe(null) // redis
+              // expect(v).toBe(undefined) // jcache
+              expect(!!v).toBe(false)
               resolve()
             })
           }, 20)
