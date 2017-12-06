@@ -17,9 +17,11 @@ module.exports = function (cacheClient, cacheType) {
         await (new Promise(resolve => {
           setTimeout(function () {
             cacheClient.get('string').then(v => {
-              // expect(v).toBe(null) // redis
-              // expect(v).toBe(undefined) // jcache
-              expect(!!v).toBe(false)
+              if (cacheType === 'redis') {
+                expect(v).toBe(null) // redis
+              } else if (cacheType === 'jcache') {
+                expect(v).toBe(undefined) // jcache
+              }
               resolve()
             })
           }, 1010)
@@ -31,8 +33,53 @@ module.exports = function (cacheClient, cacheType) {
         await (new Promise(resolve => {
           setTimeout(function () {
             cacheClient.get('string').then(v => {
-              // expect(v).toBe(null) // redis
-              // expect(v).toBe(undefined) // jcache
+              if (cacheType === 'redis') {
+                expect(v).toBe(null) // redis
+              } else if (cacheType === 'jcache') {
+                expect(v).toBe(undefined) // jcache
+              }
+              resolve()
+            })
+          }, 20)
+        }))
+      })
+      it('set key NX', async () => {
+        expect(await cacheClient.set('string', 's1', 'PX', 10, 'NX')).toBe('OK')
+
+        expect(!!await cacheClient.set('string', 's2', 'PX', 10, 'NX')).toBe(false)
+        if (cacheType === 'redis') {
+          expect(await cacheClient.set('string', 's2', 'PX', 10, 'NX')).toBe(null) // redis
+        } else if (cacheType === 'jcache') {
+          expect(await cacheClient.set('string', 's2', 'PX', 10, 'NX')).toBe(undefined) // jcache
+        }
+
+        expect(await cacheClient.get('string')).toBe('s1')
+        await (new Promise(resolve => {
+          setTimeout(function () {
+            cacheClient.get('string').then(v => {
+              expect(!!v).toBe(false)
+              resolve()
+            })
+          }, 20)
+        }))
+      })
+
+      it('set key XX', async () => {
+        if (cacheType === 'redis') {
+          expect(await cacheClient.set('string', 's1', 'PX', 10, 'XX')).toBe(null)
+        } else if (cacheType === 'jcache') {
+          expect(await cacheClient.set('string', 's1', 'PX', 10, 'XX')).toBe(undefined)
+        }
+
+        await cacheClient.set('string', 's1')
+        expect(await cacheClient.get('string')).toBe('s1')
+
+        expect(await cacheClient.set('string', 's2', 'PX', 10, 'XX')).toBe('OK')
+
+        expect(await cacheClient.get('string')).toBe('s2')
+        await (new Promise(resolve => {
+          setTimeout(function () {
+            cacheClient.get('string').then(v => {
               expect(!!v).toBe(false)
               resolve()
             })
