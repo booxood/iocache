@@ -176,11 +176,20 @@ module.exports = function (cacheClient, cacheType) {
 
     describe('hash', () => {
       it('hset key field value | hget key field', async () => {
+        // number value
         await cacheClient.hset('hash', 'v1', 1)
         expect(await cacheClient.hget('hash', 'v1')).toBe('1')
 
+        // string value
         await cacheClient.hset('hash', 'v2', 'ok')
         expect(await cacheClient.hget('hash', 'v2')).toBe('ok')
+
+        // no value
+        if (cacheType === 'redis') {
+          expect(await cacheClient.hget('hash', 'no')).toBe(null)
+        } else if (cacheType === 'jcache') {
+          expect(await cacheClient.hget('hash', 'no')).toBe(undefined)
+        }
       })
       it('hdel key field *', async () => {
         await cacheClient.hset('hash', 'v2', 'ok')
