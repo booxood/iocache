@@ -24,7 +24,22 @@ module.exports = function (jcachePath) {
           if (code < 0) {
             reject(new Error(`Jcache error: ${msg}`))
           } else {
-            resolve(data.length > 1 ? data : data[0])
+            let result = data.length > 1 ? data : data[0]
+
+            // ["v1", "1", "v2", "2", "v3", "3"] -> {"v1": "1", "v2": "2", "v3": "3"}
+            if (command === 'hgetall') {
+              const t = {}
+              result = result && result.forEach((r, i) => {
+                if (i % 2 === 0) {
+                  t[r] = ''
+                } else {
+                  t[result[i - 1]] = r
+                }
+              })
+              result = t
+            }
+
+            resolve(result)
           }
         })
       })

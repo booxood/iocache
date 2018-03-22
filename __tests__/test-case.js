@@ -209,6 +209,15 @@ module.exports = function (cacheClient, cacheType) {
 
         expect(await cacheClient.hget('hash', 'v1')).toBe('3')
       })
+
+      it('hgetall key', async () => {
+        await cacheClient.hset('hash', 'v1', 1)
+        await cacheClient.hset('hash', 'v2', 2)
+        await cacheClient.hset('hash', 'v3', 3)
+
+        expect(await cacheClient.hgetall('hash')).toEqual({v1: '1', v2: '2', v3: '3'})
+        expect(await cacheClient.hgetall('xxxx')).toEqual({})
+      })
     })
   })
 }
