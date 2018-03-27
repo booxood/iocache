@@ -15,6 +15,18 @@ module.exports = function (jcachePath) {
       const cmd = new jcache.RCommand()
       cmd.Arg(0, command)
 
+      
+      if (command === 'hmset') {
+        if (argvs.length === 2) {
+          if (typeof argvs[1] === 'object') {
+            let obj = argvs.pop()
+            for (var key in obj) {
+              argvs.push(key, obj[key])
+            }
+          }
+        }
+      }
+
       argvs.forEach((argv, i) => cmd.Arg(i + 1, argv))
       indexes.forEach(index => cmd.Key(index + 1))
 

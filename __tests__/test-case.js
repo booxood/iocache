@@ -218,6 +218,20 @@ module.exports = function (cacheClient, cacheType) {
         expect(await cacheClient.hgetall('hash')).toEqual({v1: '1', v2: '2', v3: '3'})
         expect(await cacheClient.hgetall('xxxx')).toEqual({})
       })
+
+      it('hmset key', async () => {
+        expect(await cacheClient.hgetall('hash')).toEqual({})
+
+        await cacheClient.hmset('hash', 'v1', 1, 'v2', 2, 'v3', 3)
+        expect(await cacheClient.hgetall('hash')).toEqual({v1: '1', v2: '2', v3: '3'})
+      })
+
+      it('hmset key object', async () => {
+        expect(await cacheClient.hgetall('hash')).toEqual({})
+
+        await cacheClient.hmset('hash', {v1: 1, v2: 2, v3: 3})
+        expect(await cacheClient.hgetall('hash')).toEqual({v1: '1', v2: '2', v3: '3'})
+      })
     })
   })
 }
