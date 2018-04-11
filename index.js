@@ -51,7 +51,7 @@ module.exports = function (jcachePath) {
             }
 
             if (/set|len/.test(command) && /^[0-9]+$/.test(result)) {
-              result = parseInt(result)
+              result = parseInt(result, 10)
             }
 
             resolve(result)
