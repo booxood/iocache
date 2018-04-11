@@ -106,6 +106,16 @@ module.exports = function (cacheClient, cacheType) {
         expect(r2).toBe(0)
         expect(r3).toBe(1)
       })
+
+      it('strlen key', async () => {
+        await cacheClient.set('string', '1')
+        await cacheClient.set('list', '12')
+        await cacheClient.set('hash', '123')
+
+        expect(await cacheClient.strlen('string')).toBe(1)
+        expect(await cacheClient.strlen('list')).toBe(2)
+        expect(await cacheClient.strlen('hash')).toBe(3)
+      })
     })
 
     describe('list', () => {
@@ -192,6 +202,14 @@ module.exports = function (cacheClient, cacheType) {
         expect(await cacheClient.lrange('list', 0, -1)).toEqual(['v1', 'v2', 'v1'])
         expect(await cacheClient.lrange('list', 1, -1)).toEqual(['v2', 'v1'])
       })
+
+      it('llen key', async () => {
+        await cacheClient.lpush('list', 'v1')
+        await cacheClient.lpush('list', 'v2')
+        await cacheClient.lpush('list', 'v3')
+
+        expect(await cacheClient.llen('list')).toBe(3)
+      })
     })
 
     describe('hash', () => {
@@ -231,6 +249,7 @@ module.exports = function (cacheClient, cacheType) {
         // expect(await cacheClient.hget('hash', 'v2')).toBe(undefined) // jcache
         expect(!!await cacheClient.hget('hash', 'v2')).toBe(false)
       })
+
       it('hincrby key field *', async () => {
         await cacheClient.hset('hash', 'v1', 1)
 
@@ -273,6 +292,26 @@ module.exports = function (cacheClient, cacheType) {
         expect(r2).toBe(1)
         expect(r3).toBe('OK')
       })
+
+      it('hlen key', async () => {
+        await cacheClient.hset('hash', 'v1', 1)
+        await cacheClient.hset('hash', 'v2', 1)
+        await cacheClient.hset('hash', 'v3', 1)
+
+        expect(await cacheClient.hlen('hash')).toBe(3)
+      })
+
+      // it('hstrlen key', async () => {
+      //   // redis available since 3.2.0
+      //   // jcache not support
+      //   await cacheClient.hset('hash', 'v1', '1')
+      //   await cacheClient.hset('hash', 'v2', '12')
+      //   await cacheClient.hset('hash', 'v3', '123')
+
+      //   expect(await cacheClient.hstrlen('hash', 'v1')).toBe(1)
+      //   expect(await cacheClient.hstrlen('hash', 'v2')).toBe(2)
+      //   expect(await cacheClient.hstrlen('hash', 'v3')).toBe(3)
+      // })
     })
   })
 }
