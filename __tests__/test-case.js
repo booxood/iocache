@@ -241,13 +241,19 @@ module.exports = function (cacheClient, cacheType) {
       })
 
       it('hdel key field *', async () => {
+        await cacheClient.hset('hash', 'v1', 'ok')
         await cacheClient.hset('hash', 'v2', 'ok')
-        expect(await cacheClient.hget('hash', 'v2')).toBe('ok')
-        await cacheClient.hdel('hash', 'v2')
+        await cacheClient.hset('hash', 'v3', 'ok')
 
+        await cacheClient.hdel('hash', 'v1')
         // expect(await cacheClient.hget('hash', 'v2')).toBe(null) // redis
         // expect(await cacheClient.hget('hash', 'v2')).toBe(undefined) // jcache
+        expect(!!await cacheClient.hget('hash', 'v1')).toBe(false)
+
+        const keys = ['v2', 'v3']
+        await cacheClient.hdel('hash', ...keys)
         expect(!!await cacheClient.hget('hash', 'v2')).toBe(false)
+        expect(!!await cacheClient.hget('hash', 'v3')).toBe(false)
       })
 
       it('hincrby key field *', async () => {
