@@ -86,6 +86,16 @@ module.exports = function (cacheClient, cacheType) {
           }, 20)
         }))
       })
+
+      it('setnx key', async () => {
+        let r1 = await cacheClient.setnx('string', 's1')
+        expect(r1).toBe(1)
+        expect(await cacheClient.get('string')).toBe('s1')
+
+        let r2 = await cacheClient.setnx('string', 's2')
+        expect(r2).toBe(0)
+        expect(await cacheClient.get('string')).toBe('s1')
+      })
     })
 
     describe('list', () => {
@@ -191,6 +201,17 @@ module.exports = function (cacheClient, cacheType) {
           expect(await cacheClient.hget('hash', 'no')).toBe(undefined)
         }
       })
+
+      it('hsetnx key field value', async () => {
+        let r1 = await cacheClient.hsetnx('hash', 'v1', 1)
+        expect(r1).toBe(1)
+        expect(await cacheClient.hget('hash', 'v1')).toBe('1')
+
+        let r2 = await cacheClient.hsetnx('hash', 'v1', 2)
+        expect(r2).toBe(0)
+        expect(await cacheClient.hget('hash', 'v1')).toBe('1')
+      })
+
       it('hdel key field *', async () => {
         await cacheClient.hset('hash', 'v2', 'ok')
         expect(await cacheClient.hget('hash', 'v2')).toBe('ok')

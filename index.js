@@ -15,7 +15,6 @@ module.exports = function (jcachePath) {
       const cmd = new jcache.RCommand()
       cmd.Arg(0, command)
 
-      
       if (command === 'hmset') {
         if (argvs.length === 2) {
           if (typeof argvs[1] === 'object') {
