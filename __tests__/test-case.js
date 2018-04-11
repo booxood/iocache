@@ -96,6 +96,16 @@ module.exports = function (cacheClient, cacheType) {
         expect(r2).toBe(0)
         expect(await cacheClient.get('string')).toBe('s1')
       })
+
+      it('set/setnx return', async () => {
+        let r1 = await cacheClient.set('string', 'v1')
+        let r2 = await cacheClient.setnx('string', 'v2')
+        let r3 = await cacheClient.setnx('list', 'v3')
+
+        expect(r1).toBe('OK')
+        expect(r2).toBe(0)
+        expect(r3).toBe(1)
+      })
     })
 
     describe('list', () => {
@@ -252,6 +262,16 @@ module.exports = function (cacheClient, cacheType) {
 
         await cacheClient.hmset('hash', {v1: 1, v2: 2, v3: 3})
         expect(await cacheClient.hgetall('hash')).toEqual({v1: '1', v2: '2', v3: '3'})
+      })
+
+      it('hset/hsetnx/hmset return', async () => {
+        let r1 = await cacheClient.hset('hash', 'v1', 1)
+        let r2 = await cacheClient.hsetnx('hash', 'v2', 1)
+        let r3 = await cacheClient.hmset('hash', {v1: 1, v2: 2, v3: 3})
+
+        expect(r1).toBe(1)
+        expect(r2).toBe(1)
+        expect(r3).toBe('OK')
       })
     })
   })

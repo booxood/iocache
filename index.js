@@ -50,6 +50,10 @@ module.exports = function (jcachePath) {
               result = t
             }
 
+            if (~command.indexOf('set') && /^[0-9]+$/.test(result)) {
+              result = parseInt(result)
+            }
+
             resolve(result)
           }
         })
