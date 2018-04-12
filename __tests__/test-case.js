@@ -1,7 +1,7 @@
 module.exports = function (cacheClient, cacheType) {
   describe(cacheType, () => {
     beforeEach(async () => {
-      await cacheClient.del('string', 'list', 'hash')
+      await cacheClient.del('string', 'list', 'hash', 'set')
     })
     afterAll(() => {
       cacheClient.disconnect()
@@ -318,6 +318,36 @@ module.exports = function (cacheClient, cacheType) {
       //   expect(await cacheClient.hstrlen('hash', 'v2')).toBe(2)
       //   expect(await cacheClient.hstrlen('hash', 'v3')).toBe(3)
       // })
+    })
+
+    describe('set', () => {
+      beforeEach(async () => {
+        await cacheClient.del('set')
+      })
+      it('sadd + smembers', async () => {
+        await cacheClient.sadd('set', 'abc', 'def', 'abc', 'efg')
+        expect((await cacheClient.smembers('set')).sort()).toEqual((['abc', 'def', 'efg']).sort())
+      })
+      it('sadd array + smembers', async () => {
+        await cacheClient.sadd('set', ['abc', 'def', 'abc', 'efg'])
+        expect((await cacheClient.smembers('set')).sort()).toEqual((['abc', 'def', 'efg']).sort())
+      })
+      it('sadd null array + smembers []', async () => {
+        await cacheClient.sadd('set', [null])
+        expect(await cacheClient.smembers('set')).toEqual([''])
+      })
+      it('sadd int array + smembers [string]', async () => {
+        await cacheClient.sadd('set', [1])
+        expect(await cacheClient.smembers('set')).toEqual(['1'])
+      })
+      it('smembers empty list', async () => {
+        expect(await cacheClient.smembers('set')).toEqual([])
+      })
+      it('srem', async () => {
+        await cacheClient.sadd('set', ['abc', 'def', 'abc', 'efg'])
+        await cacheClient.srem('set', ['abc', 'def'])
+        expect(await cacheClient.smembers('set')).toEqual(['efg'])
+      })
     })
   })
 }
