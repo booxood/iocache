@@ -15,13 +15,23 @@ module.exports = function (jcachePath) {
       const cmd = new jcache.RCommand()
       cmd.Arg(0, command)
 
+      // { k: v } => ...[k, v]
       if (command === 'hmset') {
         if (argvs.length === 2) {
           if (typeof argvs[1] === 'object') {
             let obj = argvs.pop()
-            for (var key in obj) {
+            for (let key in obj) {
               argvs.push(key, obj[key])
             }
+          }
+        }
+      }
+
+      // [] => ...[]
+      if (command === 'sadd' || command === 'srem') {
+        if (argvs.length === 2) {
+          if (Array.isArray(argvs[1])) {
+            argvs = argvs.concat(argvs.pop().map(v => v === null ? '' : v))
           }
         }
       }
@@ -52,6 +62,15 @@ module.exports = function (jcachePath) {
 
             if (/set|len/.test(command) && /^[0-9]+$/.test(result)) {
               result = parseInt(result, 10)
+            }
+
+            if (command === 'smembers') {
+              let resultType = typeof result
+              if (resultType === 'string') {
+                result = [result]
+              } else if (resultType === 'undefined') {
+                result = []
+              }
             }
 
             resolve(result)
