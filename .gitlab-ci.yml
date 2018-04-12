@@ -1,0 +1,16 @@
+before_script:
+  - node -v
+  - npm -v
+  - npm i --registry=http://registry.m.jd.com
+
+test_redis:
+  stage: test
+  script:
+    - REDIS_URI=$REDIS_URI npm run test:redis
+
+test_jcache:
+  stage: test
+  script:
+    - mkdir ./bin/
+    - cp ~/iocache/bin/jcache-7.10.node ./bin/
+    - JCACHE_NAME=$JCACHE_NAME npm run test:jcache
