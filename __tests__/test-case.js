@@ -349,5 +349,22 @@ module.exports = function (cacheClient, cacheType) {
         expect(await cacheClient.smembers('set')).toEqual(['efg'])
       })
     })
+    describe('multiSet', () => {
+      it('set multiSet', async () => {
+        await cacheClient.multiSet('multiset', 1, 'EX', 1)
+        await cacheClient.multiSet([['multiset2', 2, 'EX', 5], ['multiset3', 3, 'EX', 6]])
+        expect(await cacheClient.mget('multiset', 'multiset2', 'multiset3')).toEqual(['1', '2', '3'])
+      })
+      it('get multiSet', async () => {
+        await (new Promise(resolve => {
+          setTimeout(function () {
+            cacheClient.get('multiset').then(v => {
+              expect(!!v).toBe(false)
+              resolve()
+            })
+          }, 1000)
+        }))
+      })
+    })
   })
 }

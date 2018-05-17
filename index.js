@@ -80,5 +80,29 @@ module.exports = function (jcachePath) {
     }
   })
 
+  JcacheWrapper.prototype.multiSet = function (...argvs) {
+    let setArgs = argvs[0]
+    if (!Array.isArray(argvs[0])) {
+      setArgs = [[...argvs]]
+    }
+    let cmds = setArgs.map((arg, idx) => {
+      let rcommand = new jcache.RCommand()
+      rcommand.Arg(0, 'set')
+      arg.forEach((item, i) => item && rcommand.Arg(i + 1, item))
+      rcommand.Key(1)
+      return rcommand
+    })
+    const self = this
+    return new Promise(function (resolve, reject) {
+      self.client.Query(cmds, function (code, msg, data) {
+        if (code < 0) {
+          reject(new Error(`Jcache error: ${msg}`))
+        } else {
+          let result = data.length > 1 ? data : data[0]
+          resolve(result)
+        }
+      })
+    })
+  }
   return JcacheWrapper
 }
