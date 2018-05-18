@@ -349,17 +349,38 @@ module.exports = function (cacheClient, cacheType) {
         expect(await cacheClient.smembers('set')).toEqual(['efg'])
       })
     })
+
     describe('multiSet', () => {
-      it('set multiSet', async () => {
-        await cacheClient.multiSet('multiset', 1, 'EX', 1)
-        await cacheClient.multiSet([['multiset2', 2, 'EX', 5], ['multiset3', 3, 'EX', 6]])
-        expect(await cacheClient.mget('multiset', 'multiset2', 'multiset3')).toEqual(['1', '2', '3'])
+      it('multiSet', async () => {
+        await cacheClient.multiSet('string', 1, 'EX', 1)
+        await cacheClient.multiSet([['list', 2, 'EX', 5], ['hash', 3, 'EX', 6]])
+        expect(await cacheClient.mget('string', 'list', 'hash')).toEqual(['1', '2', '3'])
       })
-      it('get multiSet', async () => {
+      it('multiSet EX PX', async () => {
+        await cacheClient.multiSet([['string', 1, 'EX', 1], ['list', 2, 'PX', 20], ['hash', 3]])
+
         await (new Promise(resolve => {
           setTimeout(function () {
-            cacheClient.get('multiset').then(v => {
+            cacheClient.get('list').then(v => {
               expect(!!v).toBe(false)
+              resolve()
+            })
+          }, 25)
+        }))
+
+        await (new Promise(resolve => {
+          setTimeout(function () {
+            cacheClient.get('string').then(v => {
+              expect(!!v).toBe(false)
+              resolve()
+            })
+          }, 1000)
+        }))
+
+        await (new Promise(resolve => {
+          setTimeout(function () {
+            cacheClient.get('hash').then(v => {
+              expect(v).toBe('3')
               resolve()
             })
           }, 1000)
